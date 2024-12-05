@@ -32,13 +32,21 @@ export class TasksController {
   }
 
   @Post()
-  createTask(@Body() task: Task) {
-    return this.tasksService.createTask(task);
+  async createTask(@Body() task: Task) {
+    const createdTask = await this.tasksService.createTask(task);
+    if (!createdTask) {
+      throw new HttpException("Task is not correct", HttpStatus.BAD_REQUEST);
+    }
+    return createdTask;
   }
 
   @Patch(":id")
-  updateTask(@Param("id") id: string, @Body() task: Task) {
-    const updatedTask = this.tasksService.updateTask(id, task);
+  async updateTask(@Param("id") id: string, @Body() task: Task) {
+    const updatedTask = await this.tasksService.updateTask(id, task);
+    if (updatedTask === null) {
+      throw new HttpException("Task is not correct", HttpStatus.BAD_REQUEST);
+    }
+
     if (!updatedTask) {
       throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
     }

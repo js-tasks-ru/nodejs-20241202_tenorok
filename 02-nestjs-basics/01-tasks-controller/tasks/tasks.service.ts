@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { Task, TaskStatus } from "./task.model";
+import { validate } from "@nestjs/class-validator";
+import { Task, TaskModel } from "./task.model";
 
 @Injectable()
 export class TasksService {
@@ -13,7 +14,11 @@ export class TasksService {
     return this.tasks.find((task) => task.id === id);
   }
 
-  createTask(task: Task): Task {
+  async createTask(task: Task): Promise<Task> {
+    if (!(await this.validateTask(task))) {
+      return null;
+    }
+
     const newTask: Task = {
       id: String(this.tasks.length),
       ...task,
@@ -22,7 +27,11 @@ export class TasksService {
     return newTask;
   }
 
-  updateTask(id: string, update: Task): Task {
+  async updateTask(id: string, update: Task): Promise<Task> {
+    if (!(await this.validateTask(update))) {
+      return null;
+    }
+
     const index = this.tasks.findIndex((task) => task.id === id);
 
     if (index >= 0) {
@@ -38,7 +47,26 @@ export class TasksService {
   deleteTask(id: string): Task {
     const index = this.tasks.findIndex((task) => task.id === id);
     const task = this.tasks[index];
-    this.tasks.splice(index, 1);
+
+    if (task) {
+      this.tasks.splice(index, 1);
+    }
+
     return task;
+  }
+
+  private async validateTask(task: Task): Promise<boolean> {
+    const taskModel = new TaskModel();
+    taskModel.title = task.title;
+    taskModel.description = task.description;
+    taskModel.status = task.status;
+
+    const errors = await validate(taskModel);
+    if (errors.length) {
+      console.error("Task validation errors:", errors);
+      return false;
+    }
+
+    return true;
   }
 }
