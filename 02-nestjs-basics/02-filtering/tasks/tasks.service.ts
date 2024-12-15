@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Task, TaskStatus } from "./task.model";
+import { Task, TaskStatus, SortName } from "./task.model";
 
 @Injectable()
 export class TasksService {
@@ -40,6 +40,10 @@ export class TasksService {
     const tasks = this.getFilteredTasks(status);
     const from = Number.isFinite(limit) ? page * limit : 0;
     return tasks.slice(from, from + limit);
+  }
+
+  sortBy(tasks: Task[], sortName: SortName): Task[] {
+    return tasks.sort((a, b) => (a[sortName] > b[sortName] ? 1 : -1));
   }
 
   private getFilteredTasks(status?: TaskStatus): Task[] {
