@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { Controller, Get, Query, ParseIntPipe } from "@nestjs/common";
 import { TasksService } from "./tasks.service";
 import { TaskStatus } from "./task.model";
 
@@ -9,7 +9,10 @@ export class TasksController {
   @Get()
   getTasks(
     @Query("status") status?: TaskStatus,
-    @Query("page") page?: number,
-    @Query("limit") limit?: number,
-  ) {}
+    @Query("page", new ParseIntPipe({ optional: true })) page: number = 1,
+    @Query("limit", new ParseIntPipe({ optional: true }))
+    limit: number = Infinity,
+  ) {
+    return this.tasksService.getTasks(page - 1, limit, status);
+  }
 }

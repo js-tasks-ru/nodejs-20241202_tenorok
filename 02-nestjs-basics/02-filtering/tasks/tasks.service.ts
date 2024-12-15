@@ -36,9 +36,17 @@ export class TasksService {
     },
   ];
 
-  getFilteredTasks(
-    status?: TaskStatus,
-    page?: number,
-    limit?: number,
-  ): Task[] {}
+  getTasks(page: number, limit: number, status?: TaskStatus): Task[] {
+    const tasks = this.getFilteredTasks(status);
+    const from = Number.isFinite(limit) ? page * limit : 0;
+    return tasks.slice(from, from + limit);
+  }
+
+  private getFilteredTasks(status?: TaskStatus): Task[] {
+    if (!status) {
+      return this.tasks;
+    }
+
+    return this.tasks.filter((task) => task.status === status);
+  }
 }
