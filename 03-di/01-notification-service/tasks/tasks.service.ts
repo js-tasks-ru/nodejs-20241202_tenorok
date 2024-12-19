@@ -1,11 +1,17 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Inject, NotFoundException } from "@nestjs/common";
 import { CreateTaskDto, Task, TaskStatus, UpdateTaskDto } from "./task.model";
+import { NotificationsService } from "../notifications/notifications.service";
+import { UsersService } from "../users/users.service";
 
 @Injectable()
 export class TasksService {
   private tasks: Task[] = [];
 
-  constructor() {}
+  constructor(
+    @Inject(NotificationsService.name)
+    private readonly notificationsService: NotificationsService,
+    private readonly usersService: UsersService,
+  ) {}
 
   async createTask(createTaskDto: CreateTaskDto) {
     const { title, description, assignedTo } = createTaskDto;
@@ -18,6 +24,17 @@ export class TasksService {
     };
     this.tasks.push(task);
 
+    const to = this.usersService.getUserById(assignedTo);
+    if (!to) {
+      throw new NotFoundException(`Не найден пользователь с ID ${assignedTo}`);
+    }
+
+    this.notificationsService.sendEmail(
+      to.email,
+      "Новая задача",
+      `Вы назначены ответственным за задачу: "${title}"`,
+    );
+
     return task;
   }
 
@@ -28,6 +45,19 @@ export class TasksService {
     }
 
     Object.assign(task, updateTaskDto);
+
+    const to = this.usersService.getUserById(task.assignedTo);
+    if (!to) {
+      throw new NotFoundException(
+        `Не найден пользователь с ID ${task.assignedTo}`,
+      );
+    }
+
+    this.notificationsService.sendSMS(
+      to.phone,
+      `Статус задачи "${task.title}" обновлён на "${task.status}"`,
+    );
+
     return task;
   }
 }
