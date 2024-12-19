@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Inject, NotFoundException } from "@nestjs/common";
 import { CreateTaskDto, Task, TaskStatus, UpdateTaskDto } from "./task.model";
 import { NotificationsService } from "../notifications/notifications.service";
 import { UsersService } from "../users/users.service";
@@ -8,6 +8,7 @@ export class TasksService {
   private tasks: Task[] = [];
 
   constructor(
+    @Inject(NotificationsService.name)
     private readonly notificationsService: NotificationsService,
     private readonly usersService: UsersService,
   ) {}
