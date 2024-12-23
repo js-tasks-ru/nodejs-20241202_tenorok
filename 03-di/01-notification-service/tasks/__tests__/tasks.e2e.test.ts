@@ -21,7 +21,7 @@ describe("TasksModule (e2e)", () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideProvider(NotificationsService)
+      .overrideProvider(NotificationsService.name)
       .useValue(mockNotificationService)
       .compile();
 
@@ -29,8 +29,9 @@ describe("TasksModule (e2e)", () => {
     await app.init();
 
     tasksService = moduleFixture.get<TasksService>(TasksService);
-    notificationService =
-      moduleFixture.get<NotificationsService>(NotificationsService);
+    notificationService = moduleFixture.get<NotificationsService>(
+      NotificationsService.name,
+    );
   });
 
   afterAll(async () => {
