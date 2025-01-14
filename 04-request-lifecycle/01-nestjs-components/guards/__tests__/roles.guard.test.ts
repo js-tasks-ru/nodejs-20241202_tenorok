@@ -6,6 +6,7 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 import * as request from "supertest";
 import { RolesGuard } from "../roles.guard";
 
@@ -29,7 +30,7 @@ describe("RolesGuard", () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [MockController],
-      providers: [RolesGuard],
+      providers: [RolesGuard, JwtService],
     }).compile();
 
     app = moduleFixture.createNestApplication();
