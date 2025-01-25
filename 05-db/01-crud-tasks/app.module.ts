@@ -12,6 +12,7 @@ import { Task } from "./tasks/entities/task.entity";
       entities: [Task],
       // Не использовать в продакшене!
       synchronize: true,
+      logging: process.env.NODE_ENV !== "test",
     }),
   ],
 })
