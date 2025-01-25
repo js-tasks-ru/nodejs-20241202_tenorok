@@ -27,8 +27,8 @@ export class TasksService {
     return task;
   }
 
-  findAll() {
-    return this.taskRepository.find();
+  findAll(page: number, limit: number) {
+    return this.taskRepository.find({ skip: page * limit, take: limit });
   }
 
   findOne(id: number) {

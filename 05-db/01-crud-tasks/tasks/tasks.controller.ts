@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   HttpException,
   HttpStatus,
+  Query,
 } from "@nestjs/common";
 import { TypeOrmFilter } from "../filters/typeorm-error.filter";
 import { TasksService } from "./tasks.service";
@@ -40,8 +41,11 @@ export class TasksController {
   }
 
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  findAll(
+    @Query("page", new ParseIntPipe({ optional: true })) page: number = 0,
+    @Query("limit", new ParseIntPipe({ optional: true })) limit: number = 2,
+  ) {
+    return this.tasksService.findAll(page, limit);
   }
 
   @Get(":id")
