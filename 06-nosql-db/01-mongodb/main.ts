@@ -1,4 +1,5 @@
 import { NestFactory } from "@nestjs/core";
+import mongoose from "mongoose";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { MongoFilter } from "./mongo/mongo.filter";
@@ -12,6 +13,11 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+
+  if (process.env.NODE_ENV !== "test") {
+    mongoose.set("debug", true);
+  }
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
