@@ -11,16 +11,14 @@ export class TasksService {
   constructor(@InjectModel(Task.name) private TaskModel: Model<Task>) {}
 
   async create(createTaskDto: CreateTaskDto) {
-    const task = new CreateTaskDto();
-    task.title = createTaskDto.title;
-    task.description = createTaskDto.description;
+    const task = this.createTask(CreateTaskDto, createTaskDto);
 
     const err = await this.validateTask(task);
     if (err) {
       return err;
     }
 
-    const createdTask = new this.TaskModel(createTaskDto);
+    const createdTask = new this.TaskModel(task);
     return createdTask.save();
   }
 
@@ -33,10 +31,7 @@ export class TasksService {
   }
 
   async update(id: ObjectId, updateTaskDto: UpdateTaskDto) {
-    const task = new UpdateTaskDto();
-    task.title = updateTaskDto.title;
-    task.description = updateTaskDto.description;
-    task.isCompleted = updateTaskDto.isCompleted;
+    const task = this.createTask(UpdateTaskDto, updateTaskDto);
 
     const err = await this.validateTask(task);
     if (err) {
@@ -61,5 +56,18 @@ export class TasksService {
       err.message = JSON.stringify(Object.values(errors[0].constraints));
       return err;
     }
+  }
+
+  private createTask(
+    TaskClass: typeof UpdateTaskDto,
+    entryTask: UpdateTaskDto,
+  ): UpdateTaskDto {
+    const task = new TaskClass();
+    task.title = entryTask.title;
+    task.description = entryTask.description;
+    task.isCompleted = entryTask.isCompleted;
+    task.deadline = entryTask.deadline;
+    task.priority = entryTask.priority;
+    return task;
   }
 }
