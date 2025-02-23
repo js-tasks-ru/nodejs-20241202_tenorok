@@ -1,8 +1,15 @@
 import { PassportStrategy } from "@nestjs/passport";
-import { Strategy } from "passport-jwt";
+import { Strategy, ExtractJwt } from "passport-jwt";
 import { Injectable } from "@nestjs/common";
+import type { JwtPayload } from "../auth.service";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  async validate(payload: any) {}
+  constructor() {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: "killer-is-jim",
+    });
+  }
 }
