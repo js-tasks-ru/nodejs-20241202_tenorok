@@ -6,15 +6,13 @@ import { AuthService } from "./auth.service";
 import { UsersModule } from "../users/users.module";
 import { JwtStrategy } from "./passport/jwt.strategy";
 import { GoogleStrategy } from "./passport/google.strategy";
+import jwtConfig from "./config/jwt";
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
-    JwtModule.register({
-      secret: "killer-is-jim", // Секретный ключ (не храните в открытом виде в реальных проектах!)
-      signOptions: { expiresIn: "1h" },
-    }),
+    JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, GoogleStrategy],
